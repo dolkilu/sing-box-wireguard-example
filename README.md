@@ -2,7 +2,7 @@
 
 ## Setup
 
-**sing-box version: 1.12.16**
+**sing-box version: 1.12.16**  
 **Tested on Arch Linux only**
 
 1. Install sing-box  
@@ -93,4 +93,3 @@ sudo systemctl edit sing-box.service
 ExecStart=
 ExecStart=/usr/bin/sing-box -D /var/lib/sing-box -c /home/username/.config/sing-box/config.json run
 ```
-
