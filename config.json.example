@@ -28,14 +28,23 @@
                     "geosite-google-gemini",
                     "geosite-anthropic"
                 ],
+                "server": "dns-nord"
+            },
+            {
                 "process_path": [
                     "/usr/bin/opencode",
+                    "/usr/bin/qbittorrent"
                 ],
+                "server": "dns-nord"
+            },
+            {
                 "domain": [
                     "openrouter.ai",
                     "clerk.openrouter.ai",
                     "opencode.ai",
                     "app.opencode.ai",
+                    "mora.jp",
+                    "cf.mora.jp"
                 ],
                 "server": "dns-nord"
             }
@@ -105,14 +114,22 @@
                     "geosite-anthropic",
                     "geosite-google-gemini"
                 ],
+                "outbound": "nord-wireguard"
+            },
+            {
                 "process_path": [
                     "/usr/bin/opencode"
                 ],
+                "outbound": "nord-wireguard"
+            },
+            {
                 "domain": [
                     "openrouter.ai",
                     "clerk.openrouter.ai",
                     "opencode.ai",
                     "app.opencode.ai",
+                    "mora.jp",
+                    "cf.mora.jp"
                 ],
                 "outbound": "nord-wireguard"
             },
@@ -126,7 +143,7 @@
             // {
             //  "type": "local",
             //  "tag": "geosite-anthropic",
-            //  "format": "source",
+            //  "format": "binary",
             //  "path": "/usr/share/sing-box/rule-set/geosite-anthropic.srs"
             // },
             {
