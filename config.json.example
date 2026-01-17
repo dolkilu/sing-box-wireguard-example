@@ -1,0 +1,161 @@
+{
+    "log": {
+        "level": "debug",
+        "output": "box.log",
+        "timestamp": true,
+        "disabled": true
+    },
+    "dns": {
+        "servers": [
+            {
+                "tag": "dns-direct",
+                "server": "1.1.1.1",
+                "path": "/dns-query",
+                "type": "https"
+            },
+            {
+                "tag": "dns-nord",
+                "server": "103.86.96.100",
+                "server_port": 53,
+                "type": "udp"
+            }
+        ],
+        "rules": [
+            {
+                "rule_set": [
+                    "geosite-openai",
+                    "geosite-google-gemini",
+                    "geosite-anthropic"
+                ],
+                "process_path": [
+                    "/usr/bin/opencode",
+                ],
+                "domain": [
+                    "openrouter.ai",
+                    "clerk.openrouter.ai",
+                    "opencode.ai",
+                    "app.opencode.ai",
+                ],
+                "server": "dns-nord"
+            }
+        ],
+        "final": "dns-direct",
+        "strategy": "prefer_ipv4"
+    },
+    "inbounds": [
+        {
+            "type": "tun",
+            "tag": "tun-in",
+            "interface_name": "tun0",
+            "address": [
+                "172.19.0.1/30"
+                // Only include ipv6 address if your vpn supports it,
+                // otherwise endpoints/outbounds without ipv6 will lead to "ip no route to host" error.
+                // Under auto_route and strict_route,
+                // not including an ipv4 address will blocks all ipv6 inbounds.
+                // The old workaround has been deprecated, unsure if 1.13/1.14 will introduce new related options.
+                // "fdfe:dcba:9876::1/126"
+            ],
+            "stack": "system",
+            "auto_route": true,
+            "strict_route": true,
+            "sniff": true
+        }
+    ],
+    "outbounds": [
+        {
+            "type": "direct",
+            "tag": "direct"
+        }
+    ],
+    "endpoints": [
+        {
+            // Generate your wireguard public key with your own private key
+            // Include ipv6 address if your vpn supports it
+            "type": "wireguard",
+            "tag": "nord-wireguard",
+            "address": [
+                "10.5.0.2/16"
+            ],
+            "private_key": "YOUR_PRIVATE_KEY",
+            "peers": [
+                {
+                    // Replace with your vpn's address
+                    "address": "ip address",
+                    "port": ,
+                    "public_key": "YOUR_PUBLIC_KEY",
+                    "allowed_ips": [
+                        "0.0.0.0/0"
+                    ]
+                }
+            ]
+        }
+    ],
+    "route": {
+        "default_domain_resolver": "dns-direct",
+        "rules": [
+            {
+                "protocol": "dns",
+                "action": "hijack-dns"
+            },
+            {
+                "rule_set": [
+                    "geosite-openai",
+                    "geosite-anthropic",
+                    "geosite-google-gemini"
+                ],
+                "process_path": [
+                    "/usr/bin/opencode"
+                ],
+                "domain": [
+                    "openrouter.ai",
+                    "clerk.openrouter.ai",
+                    "opencode.ai",
+                    "app.opencode.ai",
+                ],
+                "outbound": "nord-wireguard"
+            },
+            {
+                "ip_is_private": true,
+                "outbound": "direct"
+            }
+        ],
+        "rule_set": [
+            // Local rule_set example:
+            // {
+            //  "type": "local",
+            //  "tag": "geosite-anthropic",
+            //  "format": "source",
+            //  "path": "/usr/share/sing-box/rule-set/geosite-anthropic.srs"
+            // },
+            {
+                "tag": "geosite-anthropic",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://github.com/SagerNet/sing-geosite/raw/refs/heads/rule-set/geosite-anthropic.srs",
+                "download_detour": "direct"
+            },
+            {
+                "tag": "geosite-openai",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://github.com/SagerNet/sing-geosite/raw/refs/heads/rule-set/geosite-openai.srs",
+                "download_detour": "direct"
+            },
+            {
+                "tag": "geosite-google-gemini",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://github.com/SagerNet/sing-geosite/raw/refs/heads/rule-set/geosite-google-gemini.srs",
+                "download_detour": "direct"
+            }
+        ],
+        "auto_detect_interface": true,
+        "final": "direct"
+    },
+    "experimental": {
+        "cache_file": {
+            "enabled": true
+        }
+    }
+}
